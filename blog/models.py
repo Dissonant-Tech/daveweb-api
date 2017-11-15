@@ -91,7 +91,7 @@ class Card(models.Model):
     classes = models.CharField(
         max_length=200
     )
-    date_publish = models.DateField(
+    date= models.DateField(
         db_index=True,
         verbose_name='Publish Date'
     )
@@ -106,7 +106,7 @@ class Card(models.Model):
     )
 
     class Meta:
-        ordering=['-date_publish']
+        ordering=['-date']
 
     def __unicode__(self):
         return self.title
