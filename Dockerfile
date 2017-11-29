@@ -4,6 +4,8 @@ ENV PYTHONUNBUFFERED 1
 MAINTAINER David Rodriguez
 
 RUN mkdir -p /usr/src/app
+RUN mkdir -p /srv/media
+RUN mkdir -p /srv/static
 WORKDIR /usr/src/app
 
 COPY requirements.txt /usr/src/app/
@@ -16,4 +18,5 @@ RUN python manage.py migrate
 RUN python manage.py collectstatic --noinput
 
 EXPOSE 8050
+VOLUME ["/srv/static", "/srv/media"]
 ENTRYPOINT ["/bin/bash", "docker-entrypoint.sh"]

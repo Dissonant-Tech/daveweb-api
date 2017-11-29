@@ -1,7 +1,5 @@
 from django.db import models
 
-from django.template.defaultfilters import slugify
-from django.utils.functional import cached_property
 from django.conf import settings
 
 
@@ -64,9 +62,9 @@ class Article(models.Model):
     )
 
     class Meta:
-        verbose_name='Article'
-        verbose_name_plural='Articles'
-        ordering=['-date_publish']
+        verbose_name = 'Article'
+        verbose_name_plural = 'Articles'
+        ordering = ['-date_publish']
 
     def __unicode__(self):
         return self.title
@@ -79,26 +77,33 @@ class Card(models.Model):
     """Card Model"""
     title = models.CharField(
         max_length=120,
+        null=True,
         verbose_name='Title'
     )
     text = models.TextField(
+        null=True,
         verbose_name='text',
     )
     image = models.ImageField(
+        null=True,
         upload_to='card-images/%Y/'
     )
-    link = models.URLField()
-    classes = models.CharField(
-        max_length=200
+    link = models.URLField(
+        null=True
     )
-    date= models.DateField(
+    classes = models.CharField(
+        max_length=200,
+        null=True
+    )
+    date = models.DateField(
         db_index=True,
+        null=True,
         verbose_name='Publish Date'
     )
     categories = models.ManyToManyField(
         Category,
         verbose_name='Categories',
-        blank=True
+        blank=True,
     )
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -106,7 +111,7 @@ class Card(models.Model):
     )
 
     class Meta:
-        ordering=['-date']
+        ordering = ['-date']
 
     def __unicode__(self):
         return self.title

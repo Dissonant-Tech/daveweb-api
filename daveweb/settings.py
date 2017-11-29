@@ -15,15 +15,15 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Get the absolute path of the settings.py file's directory
+PWD = os.path.dirname(os.path.realpath(__file__))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'cyxfl49ajpa#+v4z@l0!((r+9l&opr=@hv!=a9hsa*+64!x(*k'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'USE_A_REAL_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = True if os.environ.get('DEBUG', False) == 'True' else True
 
 ALLOWED_HOSTS = ['*']
 
@@ -124,10 +124,18 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_ROOT = '/static'
+STATIC_URL = '/srv/static/'
+MEDIA_ROOT = '/srv/media'
+
+if DEBUG:
+    MEDIA_ROOT = '%s/srv/media' % PWD
+    STATIC_ROOT = '%s/static' % PWD
+
 
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'DEFAULT_PAGINATION_CLASS':
+        'rest_framework.pagination.LimitOffsetPagination',
     'DEFAULT_PERMISSION_CLASSES': [
     ],
     'PAGE_SIZE': 10
