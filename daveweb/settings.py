@@ -23,7 +23,7 @@ PWD = os.path.dirname(os.path.realpath(__file__))
 SECRET_KEY = os.environ.get('SECRET_KEY', 'USE_A_REAL_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True if os.environ.get('DEBUG', False) == 'True' else True
+DEBUG = True if os.environ.get('DEBUG', False) == 'True' else False
 
 ALLOWED_HOSTS = ['*']
 
@@ -82,10 +82,22 @@ WSGI_APPLICATION = 'daveweb.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': os.environ.get('DB_ENGINE'),
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASS'),
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': os.environ.get('DB_PORT')
     }
 }
+
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
 
 # Password validation
@@ -124,12 +136,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
-STATIC_ROOT = '/static'
-STATIC_URL = '/srv/static/'
+STATIC_ROOT = '/srv/static'
 MEDIA_ROOT = '/srv/media'
 
+STATIC_URL = '/static/'
+
 if DEBUG:
-    MEDIA_ROOT = '%s/srv/media' % PWD
+    MEDIA_ROOT = '%s/media' % PWD
     STATIC_ROOT = '%s/static' % PWD
 
 

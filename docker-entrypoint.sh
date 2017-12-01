@@ -5,9 +5,9 @@ python manage.py collectstatic --noinput  # Collect static files
 
 # Start Gunicorn processes
 echo Starting Gunicorn.
-exec gunicorn splyttr.wsgi:application \
+exec gunicorn daveweb.wsgi:application \
     --name splyttr \
-    --bind 0.0.0.0:8050 \
+    --bind 0.0.0.0:8000 \
     --workers 3 \
     --log-level=info \
     "$@"

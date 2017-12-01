@@ -31,6 +31,7 @@ class Article(models.Model):
     """Article Model"""
     title = models.CharField(
         max_length=100,
+        null=True,
         verbose_name='Title'
     )
     slug = models.SlugField(
@@ -42,9 +43,9 @@ class Article(models.Model):
     content = models.TextField(
         verbose_name='Content (Markdown)',
     )
-    date_publish = models.DateField(
+    created_at = models.DateField(
         db_index=True,
-        verbose_name='Publish Date'
+        verbose_name='Date Created'
     )
     published = models.BooleanField(
         default=False,
@@ -64,7 +65,7 @@ class Article(models.Model):
     class Meta:
         verbose_name = 'Article'
         verbose_name_plural = 'Articles'
-        ordering = ['-date_publish']
+        ordering = ['-created_at']
 
     def __unicode__(self):
         return self.title
@@ -78,6 +79,7 @@ class Card(models.Model):
     title = models.CharField(
         max_length=120,
         null=True,
+        blank=True,
         verbose_name='Title'
     )
     text = models.TextField(
@@ -86,19 +88,32 @@ class Card(models.Model):
     )
     image = models.ImageField(
         null=True,
+        blank=True,
         upload_to='card-images/%Y/'
     )
     link = models.URLField(
-        null=True
+        null=True,
+        blank=True
     )
     classes = models.CharField(
         max_length=200,
         null=True
     )
-    date = models.DateField(
+    created_at = models.DateField(
         db_index=True,
+        auto_now_add=True,
+        verbose_name='Created at'
+    )
+    date_visible = models.BooleanField(
+        default=False,
+        verbose_name='Date is Visible'
+    )
+    article = models.ForeignKey(
+        Article,
+        verbose_name='Article',
+        blank=True,
         null=True,
-        verbose_name='Publish Date'
+        on_delete=models.CASCADE
     )
     categories = models.ManyToManyField(
         Category,
@@ -111,10 +126,7 @@ class Card(models.Model):
     )
 
     class Meta:
-        ordering = ['-date']
-
-    def __unicode__(self):
-        return self.title
+        ordering = ['-created_at']
 
     def __str__(self):
-        return self.title
+        return 'Card: %s' % self.id

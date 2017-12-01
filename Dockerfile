@@ -14,9 +14,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . /usr/src/app
 
-RUN python manage.py migrate
 RUN python manage.py collectstatic --noinput
 
-EXPOSE 8050
+EXPOSE 8000
 VOLUME ["/srv/static", "/srv/media"]
 ENTRYPOINT ["/bin/bash", "docker-entrypoint.sh"]
