@@ -1,6 +1,7 @@
 from django.db import models
-
 from django.conf import settings
+
+from markdownx.models import MarkdownxField
 
 
 class Category(models.Model):
@@ -40,9 +41,7 @@ class Article(models.Model):
         help_text='Uri Identifier',
         max_length=255
     )
-    content = models.TextField(
-        verbose_name='Content (Markdown)',
-    )
+    content = MarkdownxField()
     created_at = models.DateField(
         db_index=True,
         verbose_name='Date Created'

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'markdownx',
     'corsheaders',
     'rest_framework',
     'user_auth',
@@ -140,11 +141,7 @@ STATIC_ROOT = '/srv/static'
 MEDIA_ROOT = '/srv/media'
 
 STATIC_URL = '/static/'
-
-if DEBUG:
-    MEDIA_ROOT = '%s/media' % PWD
-    STATIC_ROOT = '%s/static' % PWD
-
+MEDIA_URL = '/media/'
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS':
