@@ -16,6 +16,5 @@ COPY . /usr/src/app
 
 RUN python manage.py collectstatic --noinput
 
-EXPOSE 8000
 VOLUME ["/srv/static", "/srv/media"]
 ENTRYPOINT ["/bin/bash", "docker-entrypoint.sh"]
