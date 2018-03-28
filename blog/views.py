@@ -1,6 +1,11 @@
 from rest_framework import viewsets
-from .models import Article, Category, Card
-from .serializers import ArticleSerializer, CategorySerializer, CardSerializer
+from drf_multiple_model.views import FlatMultipleModelAPIView
+from drf_multiple_model.pagination import MultipleModelLimitOffsetPagination
+from .models import (Article, Category,
+                     ArticleCard, BannerCard, QuoteCard, ImageCard)
+from .serializers import (ArticleSerializer, CategorySerializer,
+                          ArticleCardSerializer, BannerCardSerializer,
+                          QuoteCardSerializer, ImageCardSerializer)
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -19,9 +24,49 @@ class ArticleViewSet(viewsets.ModelViewSet):
     serializer_class = ArticleSerializer
 
 
-class CardViewSet(viewsets.ModelViewSet):
+class CardViewSet(FlatMultipleModelAPIView):
     """
-    API endpoint that allows articles to be viewed or edited.
+    API endpoint that allows all types of cards to be viewed or edited.
     """
-    queryset = Card.objects.all()
-    serializer_class = CardSerializer
+    pagination_class = MultipleModelLimitOffsetPagination
+    add_model_type = False
+    sorting_field = 'created_at'
+
+    querylist = [
+        {
+            'queryset': ArticleCard.objects.all(),
+            'serializer_class': ArticleCardSerializer
+        },
+        {
+            'queryset': BannerCard.objects.all(),
+            'serializer_class': BannerCardSerializer
+        },
+        {
+            'queryset': QuoteCard.objects.all(),
+            'serializer_class': QuoteCardSerializer
+        },
+        {
+            'queryset': ImageCard.objects.all(),
+            'serializer_class': ImageCardSerializer
+        }
+    ]
+
+
+class ArticleCardViewSet(viewsets.ModelViewSet):
+    queryset = ArticleCard.objects.all()
+    serializer_class = ArticleCardSerializer
+
+
+class BannerCardViewSet(viewsets.ModelViewSet):
+    queryset = BannerCard.objects.all()
+    serializer_class = BannerCardSerializer
+
+
+class QuoteCardViewSet(viewsets.ModelViewSet):
+    queryset = QuoteCard.objects.all()
+    serializer_class = QuoteCardSerializer
+
+
+class ImageCardViewSet(viewsets.ModelViewSet):
+    queryset = ImageCard.objects.all()
+    serializer_class = ImageCardSerializer

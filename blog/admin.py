@@ -1,9 +1,11 @@
 from django.contrib import admin
-from .models import Article, Category, Card
+from markdownx.admin import MarkdownxModelAdmin
+from .models import (Article, Category,
+                     ArticleCard, BannerCard, QuoteCard, ImageCard)
 
 
 @admin.register(Article)
-class ArticleAdmin(admin.ModelAdmin):
+class ArticleAdmin(MarkdownxModelAdmin):
     pass
 
 
@@ -12,6 +14,21 @@ class CategoryAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(Card)
-class CardAdmin(admin.ModelAdmin):
+@admin.register(ArticleCard)
+class ArticleCardAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(BannerCard)
+class BannerCardAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(QuoteCard)
+class QuoteCardAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(ImageCard)
+class ImageCardAdmin(admin.ModelAdmin):
     pass
