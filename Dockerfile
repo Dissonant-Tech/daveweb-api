@@ -17,4 +17,6 @@ COPY . /usr/src/app
 RUN python manage.py collectstatic --noinput
 
 VOLUME ["/srv/static", "/srv/media"]
-ENTRYPOINT ["/bin/bash", "docker-entrypoint.sh"]
+ENTRYPOINT ["gunicorn", "daveweb.wsgi:application",\
+            "--name", "daveweb_api", "--workers", "3",\
+            "--bind", "0.0.0.0:8000", "--log-level", "debug"]

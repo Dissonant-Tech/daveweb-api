@@ -90,7 +90,8 @@ class Card(models.Model):
     DEFAULT_STYLE = 'BA'
 
     text = models.TextField(
-        null=True,
+        null=False,
+        blank=False,
         verbose_name='text',
     )
     created_at = models.DateField(
@@ -134,10 +135,15 @@ class ArticleCard(Card):
         verbose_name='Article',
         on_delete=models.CASCADE
     )
+    text = models.TextField(
+        null=False,
+        verbose_name='text',
+        blank=True
+    )
 
-    def save(self):
+    def save(self, *args, **kwargs):
         if not self.text:
-            self.text = Article.objects.get(pk=self.article).content
+            self.text = Article.objects.get(pk=self.article.id).content
             self.text = Truncator(self.text).words(apps.get_app_config('blog')
                                                    .CARD_TRUNCATE_SIZE)
 
