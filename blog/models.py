@@ -1,17 +1,9 @@
 from django.db import models
 from django.apps import apps
 from django.conf import settings
-from django.utils.text import Truncator
+from django.utils.text import Truncator, slugify
 
 from markdownx.models import MarkdownxField
-
-
-CARD_STYLE_CHOICES = (
-    ('AR', 'Article'),  # Links to an article. Uses title from article
-    ('BA', 'Banner'),   # Text body is central. Uses title
-    ('QU', 'Quote'),    # Used for quotes. Has footer. No title
-    ('IM', 'Image'),    # Image in top part of card
-)
 
 
 class Category(models.Model):
@@ -25,6 +17,7 @@ class Category(models.Model):
     slug = models.SlugField(
         max_length=100,
         db_index=True,
+        blank=True,
     )
 
     def __unicode__(self):
@@ -32,6 +25,11 @@ class Category(models.Model):
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super(Category, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name='Category'
@@ -72,29 +70,33 @@ class Article(models.Model):
         verbose_name='User'
     )
 
-    class Meta:
-        verbose_name = 'Article'
-        verbose_name_plural = 'Articles'
-        ordering = ['-created_at']
-
     def __unicode__(self):
         return self.title
 
     def __str__(self):
         return self.title
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super(Article, self).save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = 'Article'
+        verbose_name_plural = 'Articles'
+        ordering = ['-created_at']
+
 
 class Card(models.Model):
     """Card Model
     Abstract class to hold card information shared by all types of cards"""
-    DEFAULT_STYLE = 'BA'
 
     text = models.TextField(
         null=False,
         blank=False,
         verbose_name='text',
     )
-    created_at = models.DateField(
+    created_at = models.DateTimeField(
         db_index=True,
         auto_now_add=True,
         verbose_name='Created at'
@@ -105,18 +107,9 @@ class Card(models.Model):
     )
     classes = models.CharField(
         max_length=200,
-        null=True
+        null=True,
+        blank=True
     )
-    style = models.CharField(
-        max_length=2,
-        choices=CARD_STYLE_CHOICES,
-        default=DEFAULT_STYLE
-    )
-
-    def __init__(self, *args, **kwargs):
-        super(Card, self).__init__(*args, **kwargs)
-        if not self.pk and not self.style:
-            self.style = self.DEFAULT_STYLE
 
     def __str__(self):
         return 'Card: %s' % self.id
@@ -128,7 +121,6 @@ class Card(models.Model):
 
 class ArticleCard(Card):
     """ArticleCard Model"""
-    DEFAULT_STYLE = 'AR'
 
     article = models.ForeignKey(
         Article,
@@ -137,11 +129,18 @@ class ArticleCard(Card):
     )
     text = models.TextField(
         null=False,
-        verbose_name='text',
-        blank=True
+        blank=True,
+        verbose_name='text'
+    )
+    date_visible = models.BooleanField(
+        default=True,
+        blank=True,
+        verbose_name='Date is Visible'
     )
 
     def save(self, *args, **kwargs):
+        self.created_at = Article.objects.get(pk=self.article.id).created_at
+
         if not self.text:
             self.text = Article.objects.get(pk=self.article.id).content
             self.text = Truncator(self.text).words(apps.get_app_config('blog')
@@ -151,7 +150,6 @@ class ArticleCard(Card):
 
 
 class BannerCard(Card):
-    DEFAULT_STYLE = 'BA'
 
     title = models.CharField(
         max_length=120,
@@ -161,7 +159,6 @@ class BannerCard(Card):
 
 class QuoteCard(Card):
     """QuoteCard Model"""
-    DEFAULT_STYLE = 'QU'
 
     footer = models.CharField(
         max_length=120,
@@ -170,8 +167,17 @@ class QuoteCard(Card):
 
 
 class ImageCard(Card):
-    DEFAULT_STYLE = 'IM'
 
+    title = models.CharField(
+        null=True,
+        max_length=120,
+        verbose_name='Title'
+    )
+    text = models.TextField(
+        null=True,
+        blank=True,
+        verbose_name='text'
+    )
     image = models.ImageField(
         upload_to='card-images/%Y/'
     )

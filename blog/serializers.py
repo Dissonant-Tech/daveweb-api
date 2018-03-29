@@ -1,16 +1,14 @@
-import markdownx
+import markdown
 from .models import (Article, Category,
                      ArticleCard, BannerCard, QuoteCard, ImageCard)
 from rest_framework import serializers
 
 
 class MarkdownField(serializers.CharField):
-
     def to_representation(self, obj):
-        return markdownx.utils.markdownify(obj)
-
-    def to_internal_value(self, data):
-        return super(MarkdownField, self).to_internal_value(self, data)
+        return markdown.markdown(obj,
+                                 extensions=['markdown.extensions.extra',
+                                             'markdown.extensions.codehilite'])
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -30,7 +28,8 @@ class ArticleSerializer(serializers.ModelSerializer):
 
 
 class ArticleCardSerializer(serializers.ModelSerializer):
-    title = serializers.ReadOnlyField(source="article.title")
+    title = serializers.ReadOnlyField(source='article.title')
+    text = MarkdownField()
 
     class Meta:
         model = ArticleCard

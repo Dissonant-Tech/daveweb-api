@@ -29,8 +29,8 @@ class CardViewSet(FlatMultipleModelAPIView):
     API endpoint that allows all types of cards to be viewed or edited.
     """
     pagination_class = MultipleModelLimitOffsetPagination
-    add_model_type = False
-    sorting_field = 'created_at'
+    add_model_type = True
+    sorting_field = '-created_at'
 
     querylist = [
         {
@@ -55,18 +55,22 @@ class CardViewSet(FlatMultipleModelAPIView):
 class ArticleCardViewSet(viewsets.ModelViewSet):
     queryset = ArticleCard.objects.all()
     serializer_class = ArticleCardSerializer
+    ordering_fields = ('created_at')
 
 
 class BannerCardViewSet(viewsets.ModelViewSet):
     queryset = BannerCard.objects.all()
     serializer_class = BannerCardSerializer
+    ordering_fields = ('created_at')
 
 
 class QuoteCardViewSet(viewsets.ModelViewSet):
     queryset = QuoteCard.objects.all()
     serializer_class = QuoteCardSerializer
+    ordering_fields = ('created_at')
 
 
 class ImageCardViewSet(viewsets.ModelViewSet):
     queryset = ImageCard.objects.all()
     serializer_class = ImageCardSerializer
+    ordering_fields = ('created_at')
